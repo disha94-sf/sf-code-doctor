@@ -35,7 +35,7 @@
   },
   "scripts": {
     "build": "tsc -p .",
-    "test": "npm run build && node --test dist/test/",
+    "test": "npm run build && node --test dist/test/*.test.js",
     "scan:example": "npm run build && node dist/src/cli.js test/fixtures"
   },
   "devDependencies": {
