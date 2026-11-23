@@ -5,7 +5,7 @@
 
 **A fast, zero-config checkup for your Salesforce project.** It catches the
 mistakes that pass code review and then fail in production: hard-coded record IDs,
-queries and DML inside loops, and classes that ignore sharing rules.
+queries and DML inside loops, classes that ignore sharing rules, and tests that check nothing.
 
 ```text
 $ sf-code-doctor force-app
@@ -67,6 +67,7 @@ sf-code-doctor --list-rules         # show all rules
 | `hardcoded-id` | Salesforce record IDs written into Apex string literals or Flow values. IDs change between orgs and sandboxes, so the code breaks after deployment. |
 | `soql-dml-in-loop` | SOQL/SOSL queries, `Database.query`, DML statements (`insert`, `update`, …) and `Database.*` DML methods inside `for`, `while` and `do` loops. These hit governor limits once data grows. The SOQL for-loop (`for (Account a : [SELECT …])`) is allowed. |
 | `missing-sharing` *(warning)* | Apex classes that run queries or DML but don't say `with sharing`, `without sharing` or `inherited sharing`, so record access isn't enforced on purpose. Test classes, and classes that never touch records, are skipped. |
+| `test-without-assert` *(warning)* | Test methods that never check a result. They pass even when the code is broken and only inflate coverage. Counts `System.assert*`, `Assert.*`, and helper calls whose name contains `assert`, `verify` or `expect` (e.g. fflib `mocks.verify`). |
 
 ### Turning a finding off
 
@@ -100,7 +101,7 @@ const findings = scan('force-app', { rules: ['soql-dml-in-loop'] });
 
 - [ ] Run as a Salesforce CLI plugin (`sf code-doctor scan`)
 - [x] Rule: classes without `with sharing` / `without sharing` / `inherited sharing`
-- [ ] Rule: test classes without assertions
+- [x] Rule: test methods without assertions
 - [ ] Rule: mixed API versions across metadata files
 - [ ] SARIF output for GitHub code scanning
 

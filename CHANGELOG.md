@@ -3,6 +3,13 @@
 All notable changes to this project are listed here.
 This project follows [Semantic Versioning](https://semver.org/).
 
+## [0.3.0] - 2026-11-23
+
+### Added
+- `test-without-assert` rule (warning): finds Apex test methods that never
+  assert anything. Supports `@IsTest` (with or without parameters) and the
+  older `testMethod` keyword.
+
 ## [0.2.0] - 2026-11-23
 
 ### Added
