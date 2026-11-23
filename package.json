@@ -1,0 +1,45 @@
+{
+  "name": "sf-code-doctor",
+  "version": "0.1.0",
+  "description": "A fast, zero-config scanner that catches common Salesforce Apex and metadata mistakes before you commit.",
+  "keywords": [
+    "salesforce",
+    "apex",
+    "sfdx",
+    "static-analysis",
+    "linter",
+    "code-quality"
+  ],
+  "license": "MIT",
+  "author": "disha94-sf",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/disha94-sf/sf-code-doctor.git"
+  },
+  "bugs": {
+    "url": "https://github.com/disha94-sf/sf-code-doctor/issues"
+  },
+  "homepage": "https://github.com/disha94-sf/sf-code-doctor#readme",
+  "bin": {
+    "sf-code-doctor": "dist/src/cli.js"
+  },
+  "main": "dist/src/index.js",
+  "types": "dist/src/index.d.ts",
+  "files": [
+    "dist/src",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "build": "tsc -p .",
+    "test": "npm run build && node --test dist/test/",
+    "scan:example": "npm run build && node dist/src/cli.js test/fixtures"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "typescript": "^5.4.0"
+  }
+}
