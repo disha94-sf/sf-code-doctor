@@ -40,7 +40,8 @@ export function findLoopBodies(code: string): Range[] {
   return bodies;
 }
 
-const PATTERNS: { regex: RegExp; message: string }[] = [
+/** Patterns for queries and DML. Exported so other rules can tell whether code touches records. */
+export const DATA_ACCESS_PATTERNS: { regex: RegExp; message: string }[] = [
   {
     regex: /\[\s*(SELECT|FIND)\b/gi,
     message: 'SOQL/SOSL query inside a loop. Query once before the loop and use a Map or Set.',
@@ -68,7 +69,7 @@ function check(source: string): RawFinding[] {
   const inLoop = (offset: number) => bodies.some((b) => offset >= b.start && offset < b.end);
   const findings = new Map<number, RawFinding>();
 
-  for (const { regex, message } of PATTERNS) {
+  for (const { regex, message } of DATA_ACCESS_PATTERNS) {
     regex.lastIndex = 0;
     let m: RegExpExecArray | null;
     while ((m = regex.exec(code))) {
