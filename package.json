@@ -1,6 +1,6 @@
 {
   "name": "sf-code-doctor",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "A fast, zero-config scanner that catches common Salesforce Apex and metadata mistakes before you commit.",
   "keywords": [
     "salesforce",
@@ -41,6 +41,7 @@
   },
   "devDependencies": {
     "@types/node": "^20.11.0",
+    "@types/sarif": "^2.1.7",
     "typescript": "^5.4.0"
   }
 }

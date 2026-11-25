@@ -2,6 +2,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import { allRules } from './rules';
+import { toSarif } from './sarif';
 import { scan } from './scanner';
 import { Finding } from './types';
 
@@ -10,7 +11,9 @@ const HELP = `Usage: sf-code-doctor [path] [options]
 Scans a Salesforce project (default: the current folder) for common mistakes.
 
 Options:
-  --format <text|json>     Output format (default: text)
+  --format <text|json|sarif>
+                           Output format (default: text). Use sarif for
+                           GitHub code scanning.
   --rules <id,id>          Only run these rules
   --fail-on <error|warning|never>
                            Exit with code 1 when a finding of this severity
@@ -25,7 +28,7 @@ Suppress a finding with a comment on the line above it:
 
 interface Options {
   target: string;
-  format: 'text' | 'json';
+  format: 'text' | 'json' | 'sarif';
   rules: string[];
   failOn: 'error' | 'warning' | 'never';
 }
@@ -59,7 +62,9 @@ function parseArgs(argv: string[]): Options | string {
         return allRules.map((r) => `${r.id.padEnd(20)} ${r.severity.padEnd(8)} ${r.description}`).join('\n');
       case '--format': {
         const v = value();
-        if (v !== 'text' && v !== 'json') throw new Error(`--format must be "text" or "json".`);
+        if (v !== 'text' && v !== 'json' && v !== 'sarif') {
+          throw new Error(`--format must be "text", "json" or "sarif".`);
+        }
         opts.format = v;
         break;
       }
@@ -128,7 +133,15 @@ export function main(argv: string[]): number {
     return 2;
   }
 
-  console.log(parsed.format === 'json' ? JSON.stringify(findings, null, 2) : formatText(findings));
+  if (parsed.format === 'sarif') {
+    const root = fs.statSync(parsed.target).isFile() ? path.dirname(parsed.target) : parsed.target;
+    const sarif = toSarif(findings, { version: version(), pathPrefix: path.relative(process.cwd(), root) });
+    console.log(JSON.stringify(sarif, null, 2));
+  } else if (parsed.format === 'json') {
+    console.log(JSON.stringify(findings, null, 2));
+  } else {
+    console.log(formatText(findings));
+  }
 
   const failing = findings.some((f) =>
     parsed.failOn === 'never' ? false : parsed.failOn === 'warning' ? true : f.severity === 'error',
