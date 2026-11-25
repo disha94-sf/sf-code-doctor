@@ -49,6 +49,7 @@ sf-code-doctor                      # scan the current folder
 sf-code-doctor force-app            # scan a folder
 sf-code-doctor path/to/MyClass.cls  # scan one file
 sf-code-doctor --format json        # machine-readable output
+sf-code-doctor --format sarif       # for GitHub code scanning
 sf-code-doctor --rules hardcoded-id # run only some rules
 sf-code-doctor --fail-on never      # report, but never fail
 sf-code-doctor --list-rules         # show all rules
@@ -82,12 +83,42 @@ Without a rule id, the comment turns off every rule for that line.
 
 ## Use it in GitHub Actions
 
+To fail a pull request when problems are found:
+
 ```yaml
 - uses: actions/setup-node@v4
   with:
     node-version: 20
 - run: npx --yes github:disha94-sf/sf-code-doctor force-app
 ```
+
+### Show results in GitHub code scanning
+
+With `--format sarif`, findings appear in the repository's **Security → Code scanning** tab and as
+annotations on pull requests:
+
+```yaml
+name: sf-code-doctor
+on: [push, pull_request]
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npx --yes github:disha94-sf/sf-code-doctor force-app --format sarif --fail-on never > results.sarif
+      - uses: github/codeql-action/upload-sarif@v4
+        with:
+          sarif_file: results.sarif
+```
+
+Run the command from the repository root so the file paths in the report match your repository.
 
 ## Use it as a library
 
@@ -103,7 +134,7 @@ const findings = scan('force-app', { rules: ['soql-dml-in-loop'] });
 - [x] Rule: classes without `with sharing` / `without sharing` / `inherited sharing`
 - [x] Rule: test methods without assertions
 - [ ] Rule: mixed API versions across metadata files
-- [ ] SARIF output for GitHub code scanning
+- [x] SARIF output for GitHub code scanning
 
 Ideas and pull requests are welcome. See [CONTRIBUTING.md](CONTRIBUTING.md).
 

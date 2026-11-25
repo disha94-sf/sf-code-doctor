@@ -3,6 +3,13 @@
 All notable changes to this project are listed here.
 This project follows [Semantic Versioning](https://semver.org/).
 
+## [0.4.0] - 2026-11-25
+
+### Added
+- `--format sarif` output (SARIF 2.1.0) for GitHub code scanning, with a
+  ready-to-use workflow in the README.
+- `toSarif()` is exported for use as a library.
+
 ## [0.3.0] - 2026-11-23
 
 ### Added
